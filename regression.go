@@ -12,12 +12,15 @@ import (
 
 func main() {
 
-	// Uncomment these rows if u want new train and test data
-	records := readData("./data/housing.csv")
+	// uncomment these rows if u want new train and test data
+	records := readData("./data/advertising.csv")
 	splitTrainTest(records)
-	model := trainModel("price", "bedrooms")
 
-	fmt.Println(predict(model, 2))
+	// train the model
+	model := trainModel("Sales", "TV")
+
+	// make a prediction and print the result
+	fmt.Println(predict(model, 230))
 
 }
 
@@ -42,6 +45,8 @@ func readData(name string) [][]string {
 func splitTrainTest(records [][]string) {
 	// save the header
 	header := records[0]
+
+	// shuffle the records
 	shuffled := make([][]string, len(records)-1)
 	perm := rand.Perm(len(records) - 1)
 	for i, v := range perm {
@@ -75,26 +80,20 @@ func splitTrainTest(records [][]string) {
 }
 
 func trainModel(y string, x string) regression.Regression {
-	// Open the CSV file from the disk
+	// open the file
 	f, err := os.Open("./data/training.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer f.Close()
 
-	// Create a new CSV reader
-	salesData := csv.NewReader(f)
-
-	// Read all the records
-	records, err := salesData.ReadAll()
+	data := csv.NewReader(f)
+	records, err := data.ReadAll()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// print size of the records
-	fmt.Println(len(records))
-
-	// In this case, we are going to try and model median house value (y) by the total rooms feature.
+	// create a new regression model and set the x and y values
 	var r regression.Regression
 	r.SetObserved(y)
 	r.SetVar(0, x)
@@ -106,8 +105,17 @@ func trainModel(y string, x string) regression.Regression {
 			continue
 		}
 
-		// Parse the house price (y)
-		price, err := strconv.ParseFloat(record[0], 64)
+		// find y index by column name
+		yIndex := -1
+		for i, columnName := range records[0] {
+			if columnName == y {
+				yIndex = i
+				break
+			}
+		}
+
+		// get the y value
+		yVal, err := strconv.ParseFloat(record[yIndex], 64)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -125,14 +133,14 @@ func trainModel(y string, x string) regression.Regression {
 			log.Fatalf("Column '%s' not found in the CSV data", x)
 		}
 
-		// Parse the total rooms value
+		// get the x value
 		xVal, err := strconv.ParseFloat(record[xIndex], 64)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println(xVal)
-		r.Train(regression.DataPoint(price, []float64{xVal}))
+		// add the datapoint to the model
+		r.Train(regression.DataPoint(yVal, []float64{xVal}))
 	}
 
 	// Train/fit the regression model
@@ -142,12 +150,10 @@ func trainModel(y string, x string) regression.Regression {
 	fmt.Printf("\nRegression Formula:\n%v\n\n", r.Formula)
 
 	return r
-
 }
 
-func predict(model regression.Regression, numRooms int64) float64 {
-	//	make prediction
-	prediction, err := model.Predict([]float64{float64(numRooms)})
+func predict(model regression.Regression, x int64) float64 {
+	prediction, err := model.Predict([]float64{float64(x)})
 	if err != nil {
 		log.Fatal(err)
 
