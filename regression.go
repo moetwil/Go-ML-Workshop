@@ -1,105 +1,38 @@
 package main
 
 import (
-	"encoding/csv"
 	"fmt"
 	"github.com/sajari/regression"
 	"log"
-	"math/rand"
-	"os"
 	"strconv"
 )
 
-func main() {
+func linearRegression() {
+	// Read the CSV file
+	data := readCSV("./data/regression/advertising.csv")
 
-	// uncomment these rows if u want new train and test data
-	records := readData("./data/advertising.csv")
-	splitTrainTest(records)
+	// Split the data into training and testing sets
+	splitTrainTest(data, "regression")
 
-	// train the model
+	// Train the model by setting the dependent and independent variables
 	model := trainModel("Sales", "TV")
 
-	// make a prediction and print the result
-	fmt.Println(predict(model, 230))
-
-}
-
-func readData(name string) [][]string {
-	file, err := os.Open(name)
-	if err != nil {
-		panic(err)
-	}
-
-	defer file.Close()
-
-	data := csv.NewReader(file)
-
-	records, err := data.ReadAll()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return records
-}
-
-func splitTrainTest(records [][]string) {
-	// save the header
-	header := records[0]
-
-	// shuffle the records
-	shuffled := make([][]string, len(records)-1)
-	perm := rand.Perm(len(records) - 1)
-	for i, v := range perm {
-		shuffled[v] = records[i+1]
-	}
-	// split the training set
-	trainingIdx := (len(shuffled)) * 4 / 5
-	trainingSet := shuffled[1 : trainingIdx+1]
-	// split the testing set
-	testingSet := shuffled[trainingIdx+1:]
-	// we write the splitted sets in separate files
-	sets := map[string][][]string{
-		"./data/training.csv": trainingSet,
-		"./data/testing.csv":  testingSet,
-	}
-	for fn, dataset := range sets {
-		f, err := os.Create(fn)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer f.Close()
-		out := csv.NewWriter(f)
-		if err := out.Write(header); err != nil {
-			log.Fatal(err)
-		}
-		if err := out.WriteAll(dataset); err != nil {
-			log.Fatal(err)
-		}
-		out.Flush()
-	}
+	// Make a prediction and print the result
+	prediction := predict(model, 230)
+	fmt.Println(prediction)
 }
 
 func trainModel(y string, x string) regression.Regression {
-	// open the file
-	f, err := os.Open("./data/training.csv")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
+	// Read the training data
+	trainingData := readCSV("./data/regression/training.csv")
 
-	data := csv.NewReader(f)
-	records, err := data.ReadAll()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Create a new regression model and set the x and y values
+	var regressionModel regression.Regression
+	regressionModel.SetObserved(y)
+	regressionModel.SetVar(0, x)
 
-	// create a new regression model and set the x and y values
-	var r regression.Regression
-	r.SetObserved(y)
-	r.SetVar(0, x)
-
-	// Loop over records in the CSV, adding the training data to the regression value.
-	for i, record := range records {
+	// Loop over trainingData in the CSV, adding the training data to the regression value.
+	for i, record := range trainingData {
 		// Skip the header.
 		if i == 0 {
 			continue
@@ -107,7 +40,7 @@ func trainModel(y string, x string) regression.Regression {
 
 		// find y index by column name
 		yIndex := -1
-		for i, columnName := range records[0] {
+		for i, columnName := range trainingData[0] {
 			if columnName == y {
 				yIndex = i
 				break
@@ -122,41 +55,48 @@ func trainModel(y string, x string) regression.Regression {
 
 		// Find the index of the column with the name 'x'
 		xIndex := -1
-		for i, columnName := range records[0] {
+		for i, columnName := range trainingData[0] {
 			if columnName == x {
 				xIndex = i
 				break
 			}
 		}
 
+		// Check if the column was found in the CSV data
 		if xIndex == -1 {
 			log.Fatalf("Column '%s' not found in the CSV data", x)
 		}
 
-		// get the x value
+		// Get the x value
 		xVal, err := strconv.ParseFloat(record[xIndex], 64)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// add the datapoint to the model
-		r.Train(regression.DataPoint(yVal, []float64{xVal}))
+		// Add the datapoint to the model
+		regressionModel.Train(regression.DataPoint(yVal, []float64{xVal}))
 	}
 
 	// Train/fit the regression model
-	r.Run()
+	regressionModel.Run()
 
 	// Output the trained model parameters
-	fmt.Printf("\nRegression Formula:\n%v\n\n", r.Formula)
+	fmt.Printf("\nRegression Formula:\n%v\n\n", regressionModel.Formula)
 
-	return r
+	// Return the trained model
+	return regressionModel
 }
 
 func predict(model regression.Regression, x int64) float64 {
+	// Make a prediction
 	prediction, err := model.Predict([]float64{float64(x)})
+
+	// Check if there was an error
 	if err != nil {
 		log.Fatal(err)
 
 	}
+
+	// Return the prediction
 	return prediction
 }
