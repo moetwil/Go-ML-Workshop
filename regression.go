@@ -15,14 +15,14 @@ func linearRegression() {
 	splitTrainTest(data, "regression")
 
 	// Train the model by setting the dependent and independent variables
-	model := trainModel("Sales", "TV")
+	model := trainLinearRegressionModel("Sales", "TV")
 
 	// Make a prediction and print the result
-	prediction := predict(model, 230)
+	prediction := predictLinearRegression(model, 230)
 	fmt.Println(prediction)
 }
 
-func trainModel(y string, x string) regression.Regression {
+func trainLinearRegressionModel(y string, x string) regression.Regression {
 	// Read the training data
 	trainingData := readCSV("./data/regression/training.csv")
 
@@ -87,7 +87,7 @@ func trainModel(y string, x string) regression.Regression {
 	return regressionModel
 }
 
-func predict(model regression.Regression, x int64) float64 {
+func predictLinearRegression(model regression.Regression, x int64) float64 {
 	// Make a prediction
 	prediction, err := model.Predict([]float64{float64(x)})
 
