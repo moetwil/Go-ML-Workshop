@@ -6,4 +6,6 @@ func main() {
 	//example()
 
 	//linearRegression()
+
+	clustering()
 }
