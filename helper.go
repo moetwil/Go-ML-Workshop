@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 )
 
 /*
@@ -33,6 +34,17 @@ func readCSV(name string) [][]string {
 
 	// Return the records
 	return records
+}
+
+func readCSVAsReader(name string) *strings.Reader {
+	// Open the file
+	file, err := os.ReadFile(name) // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	data := string(file)
+	return strings.NewReader(data)
 }
 
 /*
