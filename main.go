@@ -8,5 +8,5 @@ func main() {
 
 	//linearRegression()
 
-	recommendation()
+	//recommendation()
 }
