@@ -98,10 +98,6 @@ func organizeData(reviews []Review) BookRatings {
 	return bookRatings
 }
 
-func mean(data []float64) float64 {
-	return stat.Mean(data, nil)
-}
-
 func stddev(data []float64) float64 {
 	return stat.StdDev(data, nil)
 }
@@ -110,8 +106,6 @@ func correlation(a, b []float64) float64 {
 	if len(a) != len(b) {
 		return 0.0
 	}
-	//meanA := mean(a)
-	//meanB := mean(b)
 	stdDevA := stddev(a)
 	stdDevB := stddev(b)
 
