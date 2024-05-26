@@ -116,16 +116,9 @@ func plotClusters(clusters [][]Point, centroids []Point) {
 	p.Y.Label.Text = "Heading Accuracy"
 
 	colors := []color.RGBA{
-		{R: 255, G: 0, B: 0, A: 255},     // red
-		{R: 0, G: 0, B: 255, A: 255},     // blue
-		{R: 0, G: 255, B: 0, A: 255},     // green
-		{R: 255, G: 165, B: 0, A: 255},   // orange
-		{R: 128, G: 0, B: 128, A: 255},   // purple
-		{R: 165, G: 42, B: 42, A: 255},   // brown
-		{R: 255, G: 192, B: 203, A: 255}, // pink
-		{R: 128, G: 128, B: 128, A: 255}, // gray
-		{R: 128, G: 128, B: 0, A: 255},   // olive
-		{R: 0, G: 255, B: 255, A: 255},   // cyan
+		{R: 255, G: 0, B: 0, A: 255}, // red
+		{R: 0, G: 0, B: 255, A: 255}, // blue
+		{R: 0, G: 255, B: 0, A: 255}, // green
 	}
 
 	for i, cluster := range clusters {
