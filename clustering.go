@@ -188,5 +188,3 @@ func clustering() {
 
 	plotClusters(clusters, kmeans.Centroids)
 }
-
-// HDBSCAN?
