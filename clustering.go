@@ -36,7 +36,7 @@ func NewKMeans(k int, points []Point) *KMeans {
 	}
 }
 
-// InitializeCentroids randomly initializes the centroids
+// Step 1: randomly initializes the centroids
 func (km *KMeans) InitializeCentroids() {
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < km.K; i++ {
@@ -44,7 +44,7 @@ func (km *KMeans) InitializeCentroids() {
 	}
 }
 
-// AssignClusters assigns each point to the nearest centroid
+// Step 2: assigns each point to the nearest centroid
 func (km *KMeans) AssignClusters() [][]Point {
 	clusters := make([][]Point, km.K)
 	for _, p := range km.Points {
@@ -62,7 +62,7 @@ func (km *KMeans) AssignClusters() [][]Point {
 	return clusters
 }
 
-// UpdateCentroids updates the centroids to the mean of the clusters
+// Step 3: updates the centroids to the mean of the clusters
 func (km *KMeans) UpdateCentroids(clusters [][]Point) {
 	for i, cluster := range clusters {
 		if len(cluster) == 0 {
@@ -77,7 +77,7 @@ func (km *KMeans) UpdateCentroids(clusters [][]Point) {
 	}
 }
 
-// Fit runs the K-means algorithm until convergence
+// Fit runs the K-means algorithm until no longer moves
 func (km *KMeans) Fit() [][]Point {
 	km.InitializeCentroids()
 	var clusters [][]Point
@@ -171,6 +171,10 @@ func extractPoints(records [][]string) ([]Point, error) {
 	return points, nil
 }
 
+// 1. The algorithm starts by randomly selecting k centroids, where k is the number of clusters you want to create.
+// 2. Each data point is assigned to the nearest centroid.
+// 3. The mean of all data points assigned to a centroid is calculated, and this mean becomes the new centroid.
+// 4. Steps 2 and 3 are repeated until the centroids no longer move or the maximum number of iterations is reached.
 func clustering() {
 	records := readCSV("./data/clustering/Soccer2019C.csv")
 	points, err := extractPoints(records)
