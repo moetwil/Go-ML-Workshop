@@ -9,4 +9,6 @@ func main() {
 	//linearRegression()
 
 	//recommendation()
+
+	clustering()
 }
