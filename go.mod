@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/sajari/regression v1.0.1
 	github.com/sjwhitworth/golearn v0.0.0-20221228163002-74ae077eafb2
+	gonum.org/v1/gonum v0.14.0
 	gonum.org/v1/plot v0.10.1
 )
 
@@ -24,5 +25,4 @@ require (
 	golang.org/x/image v0.6.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	gonum.org/v1/gonum v0.14.0 // indirect
 )

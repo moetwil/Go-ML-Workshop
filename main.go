@@ -1,6 +1,7 @@
 package main
 
 func main() {
+	verify()
 	// TODO: Uncomment the function you want to run
 
 	//example()
@@ -8,4 +9,7 @@ func main() {
 	//linearRegression()
 
 	clustering()
+
+	//recommendation()
+
 }
